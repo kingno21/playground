@@ -7,12 +7,36 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak private var clickbutton: UIButton! {
+        didSet {
+            clickbutton.layer.cornerRadius = 20.0
+            clickbutton.layer.borderWidth = 2.0
+            clickbutton.layer.borderColor = UIColor.black.cgColor
+        }
+    }
+    
+    @IBOutlet weak var count: UILabel!
+    private var counting: Variable<Int?> = Variable(0)
+
+    private let disposeBag = DisposeBag()
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        
+        count.text = "Count: \(counting.value!)"
+        
+        clickbutton.rx.tap.asObservable().subscribe(onNext: { (_) in
+            if let c = self.counting.value {
+                self.counting.value = c + 1
+                self.count.text = "Count: \(self.counting.value!)"
+            }
+        }).disposed(by: disposeBag)
     }
 
     override func didReceiveMemoryWarning() {
